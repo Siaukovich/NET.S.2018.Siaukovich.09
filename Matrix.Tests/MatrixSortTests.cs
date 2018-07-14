@@ -10,7 +10,7 @@
     /// Class for testing MatrixSort class.
     /// </summary>
     [TestFixture]
-    public class MatrixTests
+    public class MatrixSortTests
     {
         [Test]
         public void Sortings_NullMatrix_ThrowsArgumentNullExc()
@@ -123,7 +123,7 @@
 
                 MatrixSort.ByRowSumAscending(array);
 
-                if (!SortedByKeyAscending(array, key: row => row.Sum()))
+                if (!IsSortedByKeyAscending(array, key: Enumerable.Sum))
                 {
                     Assert.Fail($"Test #{i} not working.");
                 }
@@ -141,7 +141,7 @@
 
                 MatrixSort.ByRowSumDescending(array);
 
-                if (!SortedByKeyDescending(array, key: row => row.Sum()))
+                if (!IsSortedByKeyDescending(array, key: Enumerable.Sum))
                 {
                     Assert.Fail($"Test #{i} not working.");
                 }
@@ -159,7 +159,7 @@
 
                 MatrixSort.ByMaxElementAscending(array);
 
-                if (!SortedByKeyAscending(array, key: row => row.Max()))
+                if (!IsSortedByKeyAscending(array, key: Enumerable.Max))
                 {
                     Assert.Fail($"Test #{i} not working.");
                 }
@@ -177,7 +177,7 @@
 
                 MatrixSort.ByMaxElementDescending(array);
 
-                if (!SortedByKeyDescending(array, key: row => row.Max()))
+                if (!IsSortedByKeyDescending(array, key: Enumerable.Max))
                 {
                     Assert.Fail($"Test #{i} not working.");
                 }
@@ -195,7 +195,7 @@
 
                 MatrixSort.ByMinElementAscending(array);
 
-                if (!SortedByKeyAscending(array, key: row => row.Min()))
+                if (!IsSortedByKeyAscending(array, key: Enumerable.Min))
                 {
                     Assert.Fail($"Test #{i} not working.");
                 }
@@ -213,7 +213,7 @@
 
                 MatrixSort.ByMinElementDescending(array);
 
-                if (!SortedByKeyDescending(array, row => row.Min()))
+                if (!IsSortedByKeyDescending(array, Enumerable.Min))
                 {
                     Assert.Fail($"Test #{i} not working.");
                 }
@@ -225,12 +225,12 @@
             var array = new int[size][];
             for (int j = 0; j < size; j++)
             {
-                array[j] = new int[size];
+                array[j] = new int[rng.Next(1, size)];
             }
 
             for (int i = 0; i < size; i++)
             {
-                for (int j = 0; j < size; j++)
+                for (int j = 0; j < array[i].Length; j++)
                 {
                     array[i][j] = rng.Next(-size, size);
                 }
@@ -239,7 +239,7 @@
             return array;
         }
 
-        private static bool SortedByKeyAscending(int[][] array, Func<int[], int> key)
+        private static bool IsSortedByKeyAscending(int[][] array, Func<int[], int> key)
         {
             int[] sums = array.Select(key).ToArray();
             for (int i = 0; i < sums.Length - 1; i++)
@@ -253,7 +253,7 @@
             return true;
         }
 
-        private static bool SortedByKeyDescending(int[][] array, Func<int[], int> key)
+        private static bool IsSortedByKeyDescending(int[][] array, Func<int[], int> key)
         {
             int[] sums = array.Select(key).ToArray();
             for (int i = 0; i < sums.Length - 1; i++)
