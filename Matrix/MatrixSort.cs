@@ -1,5 +1,7 @@
 ﻿namespace Matrix
 {
+    using System;
+
     /// <summary>
     /// Class for sorting matrix's rows by different keys.
     /// </summary>
@@ -11,8 +13,16 @@
         /// <param name="matrix">
         /// Matrix that needs to be sorted.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if matrix is null or any of its rows is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if some of matrix's row are empty.
+        /// </exception>
         public static void ByRowSumAscending(int[][] matrix)
         {
+            ThrowForInvalidMatrix(matrix);
+
             var sums = new (long sum, int[] row)[matrix.Length];
             for (int i = 0; i < sums.Length; i++)
             {
@@ -33,6 +43,12 @@
         /// <param name="matrix">
         /// Matrix that needs to be sorted.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if matrix is null or any of its rows is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if some of matrix's row are empty.
+        /// </exception>
         public static void ByRowSumDescending(int[][] matrix)
         {
             ByRowSumAscending(matrix);
@@ -46,8 +62,16 @@
         /// <param name="matrix">
         /// Matrix that needs to be sorted.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if matrix is null or any of its rows is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if some of matrix's row are empty.
+        /// </exception>
         public static void ByMaxElementAscending(int[][] matrix)
         {
+            ThrowForInvalidMatrix(matrix);
+
             var maxes = new (long max, int[] row)[matrix.Length];
             for (int i = 0; i < maxes.Length; i++)
             {
@@ -68,6 +92,12 @@
         /// <param name="matrix">
         /// Matrix that needs to be sorted.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if matrix is null or any of its rows is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if some of matrix's row are empty.
+        /// </exception>
         public static void ByMaxElementDescending(int[][] matrix)
         {
             ByMaxElementAscending(matrix);
@@ -81,8 +111,16 @@
         /// <param name="matrix">
         /// Matrix that needs to be sorted.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if matrix is null or any of its rows is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if some of matrix's row are empty.
+        /// </exception>
         public static void ByMinElementAscending(int[][] matrix)
         {
+            ThrowForInvalidMatrix(matrix);
+
             var mins = new (long max, int[] row)[matrix.Length];
             for (int i = 0; i < mins.Length; i++)
             {
@@ -103,6 +141,12 @@
         /// <param name="matrix">
         /// Matrix that needs to be sorted.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if matrix is null or any of its rows is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if some of matrix's row are empty.
+        /// </exception>
         public static void ByMinElementDescending(int[][] matrix)
         {
             ByMinElementAscending(matrix);
@@ -134,6 +178,62 @@
                 {
                     break;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Checks passed matrix.
+        /// </summary>
+        /// <param name="matrix">
+        /// The matrix.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if matrix is null or any of its rows is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if some of matrix's row are empty.
+        /// </exception>
+        private static void ThrowForInvalidMatrix(int[][] matrix)
+        {
+            if (matrix == null)
+            {
+                throw new ArgumentNullException(nameof(matrix));
+            }
+
+            if (AnyRowIsNull())
+            {
+                throw new ArgumentNullException(nameof(matrix), "Not all rows are initialized.");
+            }
+
+            if (AnyRowIsEmpty())
+            {
+                throw new ArgumentException("Matrix's rows can not be empty.");
+            }
+
+            bool AnyRowIsNull()
+            {
+                foreach (int[] row in matrix)
+                {
+                    if (row == null)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            bool AnyRowIsEmpty()
+            {
+                foreach (int[] row in matrix)
+                {
+                    if (row.Length == 0)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
 
