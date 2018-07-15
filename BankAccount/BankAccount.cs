@@ -10,7 +10,20 @@
     {
         #region Private fields
 
-        private string _number;
+        /// <summary>
+        /// International bank account number.
+        /// </summary>
+        private string number;
+
+        /// <summary>
+        /// Gets the bonus points percent based on account status.
+        /// </summary>
+        private double bonusPointsPercent;
+
+        /// <summary>
+        /// Bank account status.
+        /// </summary>
+        private BankAccountStatus status;
 
         #endregion
 
@@ -25,10 +38,14 @@
         /// <param name="accountNumber">
         /// Bank account number.
         /// </param>
-        public BankAccount(Holder holder, string accountNumber)
+        /// <param name="status">
+        /// Bank account status.
+        /// </param>
+        public BankAccount(Holder holder, string accountNumber, BankAccountStatus status)
         {
             this.Holder = holder;
             this.Number = accountNumber;
+            this.Status = status;
 
             this.MaxWithdraw = 200;
         }
@@ -58,7 +75,7 @@
         /// </summary>
         public string Number
         {
-            get => this._number;
+            get => this.number;
 
             private set
             {
@@ -74,7 +91,7 @@
                     throw new ArgumentException("Bank account number must be a 28 sybol long string that contains digits and uppercase letters.");
                 }
 
-                this._number = value;
+                this.number = value;
             }
         }
 
@@ -82,6 +99,19 @@
         /// Gets or sets this bank account maximum withdraw amount.
         /// </summary>
         public decimal MaxWithdraw { get; set; }
+
+        /// <summary>
+        /// Gets or sets the bank account status based on accounts BonusPoints.
+        /// </summary>
+        public BankAccountStatus Status
+        {
+            get => this.status;
+            set
+            {
+                this.status = value;
+                this.SetBonusPointsPercent();
+            }
+        }
 
         #endregion
 
@@ -112,12 +142,13 @@
             }
 
             this.Balance += amount;
+            this.BonusPoints += (int)((double)amount * this.bonusPointsPercent);
         }
 
         /// <summary>
         /// Withdraw money from this bank account.
         /// </summary>
-        /// <param name="amout">
+        /// <param name="amount">
         /// The amount to withdraw.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -126,27 +157,27 @@
         /// <exception cref="ArgumentException">
         /// Thrown if amount &gt; this account's max withdraw or amount &gt; this account's balance.
         /// </exception>
-        public void Withdraw(decimal amout)
+        public void Withdraw(decimal amount)
         {
-            if (amout <= 0)
+            if (amount <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(amout), "Deposit amount can not be less or equal to zero.");
+                throw new ArgumentOutOfRangeException(nameof(amount), "Deposit amount can not be less or equal to zero.");
             }
 
-            if (amout > this.MaxWithdraw)
+            if (amount > this.MaxWithdraw)
             {
                 throw new ArgumentException($"Can not withdraw more than {nameof(this.MaxWithdraw)}.");
             }
 
-            if (amout > this.Balance)
+            if (amount > this.Balance)
             {
                 throw new ArgumentException($"Can not withdraw more than {nameof(this.Balance)}.");
             }
 
-            this.Balance -= amout;
+            this.Balance -= amount;
+            this.BonusPoints -= (int)((double)amount * this.bonusPointsPercent);
         }
         
-
         #endregion
 
         #region Private helpers
@@ -162,6 +193,31 @@
         /// True of number have more than two decimal places, false otherwise.
         /// </returns>
         private static bool HaveMoreThanTwoDecimalPlaces(decimal value) => decimal.Round(value, 2) == value;
+
+        /// <summary>
+        /// Sets bonus points percent based on account status.
+        /// </summary>
+        private void SetBonusPointsPercent()
+        {
+            switch (this.Status)
+            {
+                case BankAccountStatus.Base:
+                    this.bonusPointsPercent = 0.01;
+                    break;
+
+                case BankAccountStatus.Silver:
+                    this.bonusPointsPercent = 0.03;
+                    break;
+
+                case BankAccountStatus.Gold:
+                    this.bonusPointsPercent = 0.05;
+                    break;
+
+                case BankAccountStatus.Platinum:
+                    this.bonusPointsPercent = 0.07;
+                    break;
+            }
+        }
 
         #endregion
     }
