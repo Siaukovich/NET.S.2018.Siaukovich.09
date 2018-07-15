@@ -14,6 +14,27 @@
 
         #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BankAccount"/> class.
+        /// </summary>
+        /// <param name="holder">
+        /// Bank account holder.
+        /// </param>
+        /// <param name="accountNumber">
+        /// Bank account number.
+        /// </param>
+        public BankAccount(Holder holder, string accountNumber)
+        {
+            this.Holder = holder;
+            this.Number = accountNumber;
+
+            this.MaxWithdraw = 200;
+        }
+
+        #endregion
+
         #region Propereties
 
         /// <summary>
@@ -57,21 +78,91 @@
             }
         }
 
+        /// <summary>
+        /// Gets or sets this bank account maximum withdraw amount.
+        /// </summary>
+        public decimal MaxWithdraw { get; set; }
+
         #endregion
 
+        #region Public methods
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="BankAccount"/> class.
+        /// Add money to this bank account.
         /// </summary>
-        /// <param name="holder">
-        /// Bank account holder.
+        /// <param name="amount">
+        /// The amount to add.
         /// </param>
-        /// <param name="accountNumber">
-        /// Bank account number.
-        /// </param>
-        public BankAccount(Holder holder, string accountNumber)
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown if amount &lt;= 0.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if amount have more than two decimal places.
+        /// </exception>
+        public void Deposit(decimal amount)
         {
-            this.Holder = holder;
-            this.Number = accountNumber;
+            if (amount <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "Deposit amount can not be less or equal to zero.");
+            }
+
+            if (!HaveMoreThanTwoDecimalPlaces(amount))
+            {
+                throw new ArgumentException("Amount must have two decimal places.", nameof(amount));
+            }
+
+            this.Balance += amount;
         }
+
+        /// <summary>
+        /// Withdraw money from this bank account.
+        /// </summary>
+        /// <param name="amout">
+        /// The amount to withdraw.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown if amount &lt;= 0;
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if amount &gt; this account's max withdraw or amount &gt; this account's balance.
+        /// </exception>
+        public void Withdraw(decimal amout)
+        {
+            if (amout <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amout), "Deposit amount can not be less or equal to zero.");
+            }
+
+            if (amout > this.MaxWithdraw)
+            {
+                throw new ArgumentException($"Can not withdraw more than {nameof(this.MaxWithdraw)}.");
+            }
+
+            if (amout > this.Balance)
+            {
+                throw new ArgumentException($"Can not withdraw more than {nameof(this.Balance)}.");
+            }
+
+            this.Balance -= amout;
+        }
+        
+
+        #endregion
+
+        #region Private helpers
+
+        /// <summary>
+        /// Checks if passed decimal value have more than two decimal places.
+        /// </summary>
+        /// <param name="value">
+        /// Value that needs to be checked.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// True of number have more than two decimal places, false otherwise.
+        /// </returns>
+        private static bool HaveMoreThanTwoDecimalPlaces(decimal value) => decimal.Round(value, 2) == value;
+
+        #endregion
     }
 }
