@@ -16,28 +16,12 @@
         public void Sortings_NullMatrix_ThrowsArgumentNullExc()
         {
             Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByRowSumAscending(null), 
-                $"{nameof(MatrixSort.ByRowSumAscending)} not throwing ArgumentNullException.");
+                () => MatrixSort.AscendingSortBy(null, new CompareByRowSum()), 
+                $"{nameof(MatrixSort.AscendingSortBy)} not throwing ArgumentNullException.");
 
             Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByRowSumDescending(null), 
-                $"{nameof(MatrixSort.ByRowSumDescending)} not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByMaxElementAscending(null), 
-                $"{nameof(MatrixSort.ByMaxElementAscending)} not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByMaxElementDescending(null), 
-                $"{nameof(MatrixSort.ByMaxElementDescending)} not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByMinElementAscending(null), 
-                $"{nameof(MatrixSort.ByMinElementAscending)}not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByMinElementDescending(null), 
-                $"{nameof(MatrixSort.ByMinElementDescending)} not throwing ArgumentNullException.");
+                () => MatrixSort.DescendingSortBy(null, new CompareByRowSum()), 
+                $"{nameof(MatrixSort.DescendingSortBy)} not throwing ArgumentNullException.");
         }
 
         [Test]
