@@ -1,0 +1,62 @@
+// У каждого счёта один владелец, у каждого владельца может быть много счетов.
+// У каждого типа аккаунта своя пороговая сумма долга.
+// Фабричный метод.
+
+1. Генерация счетов (стратегия) 
+
+interface IAccountNumberGenerator
+{
+    string GenerateAccountNumber();
+}
+
+2. class AccountHolder
+{
+    prop email;
+    prop phoneNumber;
+    prop name;
+}
+
+Вместе с валидацией.
+
+// Пока что ListRepository.
+// FakeRepository - создаётся в памяти.
+3. IRepository
+{
+    Save(Account bankAccount);
+    GetByNumber(accountNumber);
+
+}
+
+4. IAccountService - сервис управления аккаунтами.
+{
+    private 
+
+    ctor(IRepository repository)
+    {
+
+    }
+
+    OpenAccount(accountHolder, accountNumberGenerator)
+    CloseAccount(accountNumber)
+    Deposit(accountNumber, amount)
+    Withdraw(accountNumber, amount)
+}
+
+5. Enum AccountStatus { open, closed, freezed };
+
+6. abstract class Account 
+{
+    AccountStatus; // prop
+    string number; // без валидации, т.к. генератор номеров
+    Hoolder Holder;
+    decimal Balance;
+    int BonusPoints;
+
+    Deposit(amount);
+    Withdraw(amount);
+
+    // Паттерн Шаблонный метод
+    protected abstract CalculateBonusPoints(amount);
+}
+
+IEquatable
