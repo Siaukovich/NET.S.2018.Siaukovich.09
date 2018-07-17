@@ -6,31 +6,31 @@
     /// <summary>
     /// Class for saving bank account info.
     /// </summary>
-    public sealed class BankAccount
+    public abstract class AbstractBankAccount
     {
         #region Private fields
 
         /// <summary>
-        /// International bank account number.
+        /// Bank account number.
         /// </summary>
         private string number;
 
         /// <summary>
-        /// Gets the bonus points percent based on account status.
+        /// The upper limit for a single withdraw.
         /// </summary>
-        private double bonusPointsPercent;
+        private decimal maxWithdraw;
 
         /// <summary>
-        /// Bank account status.
+        /// This bank account's holder.
         /// </summary>
-        private BankAccountStatus status;
+        private Holder holder;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BankAccount"/> class.
+        /// Initializes a new instance of the <see cref="AbstractBankAccount"/> class.
         /// </summary>
         /// <param name="holder">
         /// Bank account holder.
@@ -38,14 +38,18 @@
         /// <param name="accountNumber">
         /// Bank account number.
         /// </param>
-        /// <param name="status">
-        /// Bank account status.
-        /// </param>
-        public BankAccount(Holder holder, string accountNumber, BankAccountStatus status)
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if <see cref="holder"/> if <see cref="accountNumber"/> is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if <see cref="accountNumber"/> does not consist of only digits and uppercase latin letters.
+        /// </exception>
+        protected AbstractBankAccount(Holder holder, string accountNumber)
         {
             this.Holder = holder;
             this.Number = accountNumber;
-            this.Status = status;
+
+            this.Status = BankAccountStatus.Open;
 
             this.MaxWithdraw = 200;
         }
@@ -67,12 +71,33 @@
         /// <summary>
         /// Gets or sets the holder of this account.
         /// </summary>
-        public Holder Holder { get; set; }
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if passed value was null.
+        /// </exception>
+        public Holder Holder
+        {
+            get => this.holder;
+            set
+            {
+                if (this.Holder == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                this.holder = value;
+            } 
+        }
 
         /// <summary>
         /// Gets this bank account number.
-        /// Bank account number is 28 digits and letters.
+        /// Bank account number must consist of only digits and letters.
         /// </summary>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if passed value is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if passed value does not consist of only digits and uppercase latin letters.
+        /// </exception>
         public string Number
         {
             get => this.number;
@@ -84,11 +109,11 @@
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                const string PATTERN = @"^[\d|A-Z]{28}$";
+                const string PATTERN = @"^[\d|A-Z]*$";
                 var regex = new Regex(PATTERN);
                 if (!regex.IsMatch(value))
                 {
-                    throw new ArgumentException("Bank account number must be a 28 sybol long string that contains digits and uppercase letters.");
+                    throw new ArgumentException("Bank account number must contain only digits and uppercase latin letters.");
                 }
 
                 this.number = value;
@@ -98,21 +123,28 @@
         /// <summary>
         /// Gets or sets this bank account maximum withdraw amount.
         /// </summary>
-        public decimal MaxWithdraw { get; set; }
-
-        /// <summary>
-        /// Gets or sets the bank account status based on accounts BonusPoints.
-        /// </summary>
-        public BankAccountStatus Status
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown if passed value &lt;= 0.
+        /// </exception>
+        public decimal MaxWithdraw
         {
-            get => this.status;
+            get => this.maxWithdraw;
             set
             {
-                this.status = value;
-                this.SetBonusPointsPercent();
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value), "Maximum withdraw can not be <= 0.");
+                }
+
+                this.maxWithdraw = value;
             }
         }
 
+        /// <summary>
+        /// Gets or sets the bank account status.
+        /// </summary>
+        public BankAccountStatus Status { get; set; }
+         
         #endregion
 
         #region Public methods
@@ -131,6 +163,12 @@
         /// </exception>
         public void Deposit(decimal amount)
         {
+            if (this.Status != BankAccountStatus.Open)
+            {
+                var exception = new InvalidOperationException($"Can not perform {nameof(this.Deposit)} operation.");
+                exception.Data["accountStatus"] = this.Status;
+            }
+
             if (amount <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(amount), "Deposit amount can not be less or equal to zero.");
@@ -142,7 +180,7 @@
             }
 
             this.Balance += amount;
-            this.BonusPoints += (int)((double)amount * this.bonusPointsPercent);
+            this.BonusPoints += this.CalculateBonusPoints(amount);
         }
 
         /// <summary>
@@ -159,6 +197,12 @@
         /// </exception>
         public void Withdraw(decimal amount)
         {
+            if (this.Status != BankAccountStatus.Open)
+            {
+                var exception = new InvalidOperationException($"Can not perform {nameof(this.Withdraw)} operation.");
+                exception.Data["accountStatus"] = this.Status;
+            }
+
             if (amount <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(amount), "Deposit amount can not be less or equal to zero.");
@@ -175,9 +219,24 @@
             }
 
             this.Balance -= amount;
-            this.BonusPoints -= (int)((double)amount * this.bonusPointsPercent);
+            this.BonusPoints -= this.CalculateBonusPoints(amount);
         }
-        
+
+        #endregion
+
+        #region Protected methods
+
+        /// <summary>
+        /// Calculates bonus points based on money amount.
+        /// </summary>
+        /// <param name="amount">
+        /// Amount of money that were withdrawn or deposit on current account.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        protected abstract int CalculateBonusPoints(decimal amount);
+
         #endregion
 
         #region Private helpers
@@ -193,31 +252,6 @@
         /// True of number have more than two decimal places, false otherwise.
         /// </returns>
         private static bool HaveMoreThanTwoDecimalPlaces(decimal value) => decimal.Round(value, 2) == value;
-
-        /// <summary>
-        /// Sets bonus points percent based on account status.
-        /// </summary>
-        private void SetBonusPointsPercent()
-        {
-            switch (this.Status)
-            {
-                case BankAccountStatus.Base:
-                    this.bonusPointsPercent = 0.01;
-                    break;
-
-                case BankAccountStatus.Silver:
-                    this.bonusPointsPercent = 0.03;
-                    break;
-
-                case BankAccountStatus.Gold:
-                    this.bonusPointsPercent = 0.05;
-                    break;
-
-                case BankAccountStatus.Platinum:
-                    this.bonusPointsPercent = 0.07;
-                    break;
-            }
-        }
 
         #endregion
     }
