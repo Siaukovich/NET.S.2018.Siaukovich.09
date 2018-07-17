@@ -134,7 +134,7 @@
                     errorMessage: "Wrong email format."
                 );
 
-                this.homeAddress = value;
+                this.email = value;
             }
         }
 
