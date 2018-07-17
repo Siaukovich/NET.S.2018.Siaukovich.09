@@ -6,23 +6,18 @@
     public enum BankAccountStatus
     {
         /// <summary>
-        /// Base account.
+        /// Open account. Holder can perform all operations.
         /// </summary>
-        Base,
+        Open,
 
         /// <summary>
-        /// Silver account.
+        /// Closed account. Holder can not perform any operations.
         /// </summary>
-        Silver,
+        Closed,
 
         /// <summary>
-        /// Gold account.
+        /// Frozen account. Holder can not perform any operations, but account may be unfrozen later.
         /// </summary>
-        Gold,
-
-        /// <summary>
-        /// Platinum account.
-        /// </summary>
-        Platinum
+        Frozen
     }
 }
