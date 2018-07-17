@@ -1,4 +1,4 @@
-﻿namespace BankAccount
+﻿namespace HolderService
 {
     using System;
     using System.Text.RegularExpressions;
@@ -6,12 +6,13 @@
     /// <summary>
     /// Class that describes a single holder by his name, contact phone, email and home address.
     /// </summary>
-    public class Holder : IEquatable<Holder>
+    public sealed class Holder : IEquatable<Holder>
     {
         #region Private fields
 
         /// <summary>
-        /// Holder's id.
+        /// Holder's id. 
+        /// Must be unique for every holder, because only id is used for comparison.
         /// </summary>
         private readonly long id;
 
@@ -34,6 +35,45 @@
         /// Holder's email.
         /// </summary>
         private string email;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Holder"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Holder's name.
+        /// </param>
+        /// <param name="contactPhone">
+        /// Holder's contact phone.
+        /// </param>
+        /// <param name="homeAddress">
+        /// Holder's home address.
+        /// </param>
+        /// <param name="email">
+        /// Holder's email.
+        /// </param>
+        /// <param name="id">
+        /// Holder's id.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown if any of the passed string is null.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// Thrown if passed string doesn't match property requirements. 
+        /// For additional info see properties' description.
+        /// </exception>
+        public Holder(string name, string contactPhone, string homeAddress, string email, long id)
+        {
+            this.Name = name;
+            this.ContactPhone = contactPhone;
+            this.HomeAddress = homeAddress;
+            this.Email = email;
+
+            this.id = id;
+        }
 
         #endregion
 
@@ -145,30 +185,86 @@
 
         #endregion
 
-        #region Constructors
+        #region Equality protocol
 
-        public Holder(string name, string contactPhone, string homeAddress, string email, long id)
+        /// <summary>
+        /// Equality comparison from <see cref="IEquatable&lt;Holder&gt;"/>.
+        /// </summary>
+        /// <param name="other">
+        /// The other.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// True if all field are equal, false otherwise.
+        /// </returns>
+        public bool Equals(Holder other)
         {
-            this.Name = name;
-            this.ContactPhone = contactPhone;
-            this.HomeAddress = homeAddress;
-            this.Email = email;
+            if (ReferenceEquals(null, other))
+            {
+                return false;
+            }
 
-            this.id = id;
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            return this.id == other.id;
         }
+
+        /// <summary>
+        /// Equality comparison from object.
+        /// </summary>
+        /// <param name="obj">
+        /// The other.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// False if some fields are not equal 
+        /// or passed object is null 
+        /// or operands have different types, 
+        /// true otherwise.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            return this.Equals((Holder)obj);
+        }
+
+        /// <summary>
+        /// Returns this Holder's hash code.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public override int GetHashCode() => this.id.GetHashCode();
 
         #endregion
 
         #region Private helpers
 
         /// <summary>
-        /// Checks passed value string for null and for matching provided regexp pattern.
+        /// Checks passed value string for null and for matching provided regular expression pattern.
         /// </summary>
         /// <param name="value">
         /// Value that needs to be checked.
         /// </param>
         /// <param name="regexpPattern">
-        /// Regexp pattern that validates passed value.
+        /// Regular expression pattern that validates passed value.
         /// </param>
         /// <param name="errorMessage">
         /// Error message for ArgumentException.
@@ -177,7 +273,7 @@
         /// Thrown if passed value is null.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// Thrown if passed value doesn't match provided regexp pattern.
+        /// Thrown if passed value doesn't match provided regular expression pattern.
         /// </exception>
         private static void ThrowForInvalidString(string value, string regexpPattern, string errorMessage)
         {
@@ -194,33 +290,5 @@
         }
 
         #endregion
-
-        public bool Equals(Holder other)
-        {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            return this.name == other.name && 
-                   this.contactPhone == other.contactPhone && 
-                   this.homeAddress == other.homeAddress && 
-                   this.email == other.email;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Holder)obj);
-        }
-
-        public override int GetHashCode() => this.id.GetHashCode();
     }
 }
