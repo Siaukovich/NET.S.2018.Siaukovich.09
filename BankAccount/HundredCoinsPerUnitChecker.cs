@@ -20,6 +20,6 @@
         /// The <see cref="bool"/>.
         /// True if contains only two decimal places, false otherwise.
         /// </returns>
-        public bool IsValidAmount(decimal amount) => decimal.Round(amount, 2) == amount;
+        public bool IsValid(decimal amount) => decimal.Round(amount, 2) == amount;
     }
 }
