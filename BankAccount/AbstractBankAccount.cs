@@ -3,12 +3,20 @@
     using System;
     using System.Text.RegularExpressions;
 
+    using HolderService;
+
     /// <summary>
     /// Class for saving bank account info.
     /// </summary>
     public abstract class AbstractBankAccount
     {
         #region Private fields
+
+        /// <summary>
+        /// Checks that given amount of money in 
+        /// <see cref="Withdraw"/> and <see cref="Deposit"/> is correct.
+        /// </summary>
+        private readonly IMoneyChecker moneyChecker;
 
         /// <summary>
         /// Bank account number.
@@ -44,10 +52,11 @@
         /// <exception cref="ArgumentException">
         /// Thrown if <see cref="accountNumber"/> does not consist of only digits and uppercase latin letters.
         /// </exception>
-        protected AbstractBankAccount(Holder holder, string accountNumber)
+        protected AbstractBankAccount(Holder holder, string accountNumber, IMoneyChecker moneyChecker)
         {
             this.Holder = holder;
             this.Number = accountNumber;
+            this.moneyChecker = moneyChecker;
 
             this.Status = BankAccountStatus.Open;
 
@@ -159,7 +168,11 @@
         /// Thrown if amount &lt;= 0.
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// Thrown if amount have more than two decimal places.
+        /// Thrown if amount does not satisfy IMoneyChecker.IsValid method.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if this account status was "Closed" of "Frozen".
+        /// Status will be saved under the "accountStatus" key in exception Data property.
         /// </exception>
         public void Deposit(decimal amount)
         {
@@ -167,6 +180,8 @@
             {
                 var exception = new InvalidOperationException($"Can not perform {nameof(this.Deposit)} operation.");
                 exception.Data["accountStatus"] = this.Status;
+
+                throw exception;
             }
 
             if (amount <= 0)
@@ -174,9 +189,9 @@
                 throw new ArgumentOutOfRangeException(nameof(amount), "Deposit amount can not be less or equal to zero.");
             }
 
-            if (!HaveMoreThanTwoDecimalPlaces(amount))
+            if (!this.moneyChecker.IsValid(amount))
             {
-                throw new ArgumentException("Amount must have two decimal places.", nameof(amount));
+                throw new ArgumentException(this.moneyChecker.ErrorMessage, nameof(amount));
             }
 
             this.Balance += amount;
@@ -193,7 +208,13 @@
         /// Thrown if amount &lt;= 0;
         /// </exception>
         /// <exception cref="ArgumentException">
-        /// Thrown if amount &gt; this account's max withdraw or amount &gt; this account's balance.
+        /// Thrown if amount &gt; this account's max withdraw 
+        /// or amount &gt; this account's balance
+        /// or amount does not satisfy IMoneyChecker.IsValid method.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown if this account status was "Closed" of "Frozen".
+        /// Status will be saved under the "accountStatus" key in exception Data property.
         /// </exception>
         public void Withdraw(decimal amount)
         {
@@ -201,6 +222,8 @@
             {
                 var exception = new InvalidOperationException($"Can not perform {nameof(this.Withdraw)} operation.");
                 exception.Data["accountStatus"] = this.Status;
+
+                throw exception;
             }
 
             if (amount <= 0)
@@ -216,6 +239,11 @@
             if (amount > this.Balance)
             {
                 throw new ArgumentException($"Can not withdraw more than {nameof(this.Balance)}.");
+            }
+
+            if (!this.moneyChecker.IsValid(amount))
+            {
+                throw new ArgumentException(this.moneyChecker.ErrorMessage, nameof(amount));
             }
 
             this.Balance -= amount;
@@ -236,22 +264,6 @@
         /// The <see cref="int"/>.
         /// </returns>
         protected abstract int CalculateBonusPoints(decimal amount);
-
-        #endregion
-
-        #region Private helpers
-
-        /// <summary>
-        /// Checks if passed decimal value have more than two decimal places.
-        /// </summary>
-        /// <param name="value">
-        /// Value that needs to be checked.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// True of number have more than two decimal places, false otherwise.
-        /// </returns>
-        private static bool HaveMoreThanTwoDecimalPlaces(decimal value) => decimal.Round(value, 2) == value;
 
         #endregion
     }
