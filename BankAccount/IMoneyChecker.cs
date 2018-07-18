@@ -20,6 +20,6 @@
         /// The <see cref="bool"/>.
         /// True if valid, false otherwise.
         /// </returns>
-        bool IsValidAmount(decimal amount);
+        bool IsValid(decimal amount);
     }
 }
