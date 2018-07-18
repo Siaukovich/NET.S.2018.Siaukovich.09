@@ -1,4 +1,4 @@
-﻿namespace Matrix
+﻿namespace Matrix.Tests
 {
     public class CompareByRowSum : ICustomComparer
     {

@@ -25,78 +25,6 @@
         }
 
         [Test]
-        public void Sortings_NullRowInMatrix_ThrowsArgumentNullExc()
-        {
-            const int SIZE = 5;
-            var matrix = new int[SIZE][];
-            for (int i = 0; i < SIZE - 1; i++)
-            {
-                matrix[i] = new int[SIZE];
-            }
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByRowSumAscending(matrix),
-                $"{nameof(MatrixSort.ByRowSumAscending)} not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByRowSumDescending(matrix),
-                $"{nameof(MatrixSort.ByRowSumDescending)} not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByMaxElementAscending(matrix),
-                $"{nameof(MatrixSort.ByMaxElementAscending)} not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByMaxElementDescending(matrix),
-                $"{nameof(MatrixSort.ByMaxElementDescending)} not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByMinElementAscending(matrix),
-                $"{nameof(MatrixSort.ByMinElementAscending)}not throwing ArgumentNullException.");
-
-            Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.ByMinElementDescending(matrix),
-                $"{nameof(MatrixSort.ByMinElementDescending)} not throwing ArgumentNullException.");
-        }
-
-        [Test]
-        public void Sortings_EmptyRowInMatrix_ThrowsArgumentNullExc()
-        {
-            const int SIZE = 5;
-            var matrix = new int[SIZE][];
-            for (int i = 0; i < SIZE - 1; i++)
-            {
-                matrix[i] = new int[SIZE];
-            }
-
-            matrix[SIZE - 1] = new int[0];
-
-            Assert.Throws<ArgumentException>(
-                () => MatrixSort.ByRowSumAscending(matrix),
-                $"{nameof(MatrixSort.ByRowSumAscending)} not throwing ArgumentException.");
-
-            Assert.Throws<ArgumentException>(
-                () => MatrixSort.ByRowSumDescending(matrix),
-                $"{nameof(MatrixSort.ByRowSumDescending)} not throwing ArgumentException.");
-
-            Assert.Throws<ArgumentException>(
-                () => MatrixSort.ByMaxElementAscending(matrix),
-                $"{nameof(MatrixSort.ByMaxElementAscending)} not throwing ArgumentException.");
-
-            Assert.Throws<ArgumentException>(
-                () => MatrixSort.ByMaxElementDescending(matrix),
-                $"{nameof(MatrixSort.ByMaxElementDescending)} not throwing ArgumentException.");
-
-            Assert.Throws<ArgumentException>(
-                () => MatrixSort.ByMinElementAscending(matrix),
-                $"{nameof(MatrixSort.ByMinElementAscending)}not throwing ArgumentException.");
-
-            Assert.Throws<ArgumentException>(
-                () => MatrixSort.ByMinElementDescending(matrix),
-                $"{nameof(MatrixSort.ByMinElementDescending)} not throwing ArgumentException.");
-        }
-
-        [Test]
         public void SortByRowSumAscending_Random100ValidTests()
         {
             var rng = new Random(0);
@@ -105,7 +33,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                MatrixSort.ByRowSumAscending(array);
+                array.AscendingSortBy(new CompareByRowSum());
 
                 if (!IsSortedByKeyAscending(array, key: Enumerable.Sum))
                 {
@@ -123,7 +51,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                MatrixSort.ByRowSumDescending(array);
+                array.DescendingSortBy(new CompareByRowSum());
 
                 if (!IsSortedByKeyDescending(array, key: Enumerable.Sum))
                 {
@@ -141,7 +69,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                MatrixSort.ByMaxElementAscending(array);
+                array.AscendingSortBy(new CompareByMaxElement());
 
                 if (!IsSortedByKeyAscending(array, key: Enumerable.Max))
                 {
@@ -159,7 +87,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                MatrixSort.ByMaxElementDescending(array);
+                array.DescendingSortBy(new CompareByMaxElement());
 
                 if (!IsSortedByKeyDescending(array, key: Enumerable.Max))
                 {
@@ -177,7 +105,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                MatrixSort.ByMinElementAscending(array);
+                array.AscendingSortBy(new CompareByMinElement());
 
                 if (!IsSortedByKeyAscending(array, key: Enumerable.Min))
                 {
@@ -195,7 +123,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                MatrixSort.ByMinElementDescending(array);
+                array.DescendingSortBy(new CompareByMinElement());
 
                 if (!IsSortedByKeyDescending(array, Enumerable.Min))
                 {
