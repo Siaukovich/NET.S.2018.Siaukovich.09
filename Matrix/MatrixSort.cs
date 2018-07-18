@@ -19,34 +19,21 @@
         /// <exception cref="ArgumentNullException">
         /// Thrown if matrix is null.
         /// </exception>
-        public static void AscendingSortBy(this int[][] matrix, ICustomComparer comparer)
+        public static void SortBy(this int[][] matrix, ICustomComparer comparer)
         {
-            ThrowForNullMatrix(matrix);
-            
+            if (matrix == null)
+            {
+                throw new ArgumentNullException(nameof(matrix));
+            }
+
+            if (comparer == null)
+            {
+                throw new ArgumentNullException(nameof(comparer));
+            }
+
             BubbleSort(matrix, comparer);
         }
 
-        /// <summary>
-        /// Sorts in descending order using given strategy.
-        /// </summary>
-        /// <param name="matrix">
-        /// Matrix that needs to be sorted.
-        /// </param>
-        /// <param name="comparer">
-        /// Rule for sorting matrix.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown if matrix is null.
-        /// </exception>
-        public static void DescendingSortBy(this int[][] matrix, ICustomComparer comparer)
-        {
-            ThrowForNullMatrix(matrix);
-
-            BubbleSort(matrix, comparer);
-            
-            Array.Reverse(matrix);
-        }
-        
         /// <summary>
         /// Bubble sort which performs O(n) in best case.
         /// </summary>
@@ -91,23 +78,6 @@
             var t = a;
             a = b;
             b = t;
-        }
-
-        /// <summary>
-        /// Checks passed matrix for null.
-        /// </summary>
-        /// <param name="matrix">
-        /// The matrix.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown if matrix is null.
-        /// </exception>
-        private static void ThrowForNullMatrix(int[][] matrix)
-        {
-            if (matrix == null)
-            {
-                throw new ArgumentNullException(nameof(matrix));
-            }
         }
     }
 }

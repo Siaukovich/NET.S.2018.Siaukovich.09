@@ -16,13 +16,25 @@
         public void Sortings_NullMatrix_ThrowsArgumentNullExc()
         {
             Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.AscendingSortBy(null, new CompareByRowSum()), 
-                $"{nameof(MatrixSort.AscendingSortBy)} not throwing ArgumentNullException.");
+                () => MatrixSort.SortBy(null, new CompareByRowSumAscending()), 
+                $"{nameof(MatrixSort.SortBy)} not throwing ArgumentNullException.");
+        }
+
+        [Test]
+        public void Sortings_NullComparer_ThrowsArgumentNullExc()
+        {
+            const int SIZE = 5;
+            var matrix = new int[SIZE][];
+            for (int i = 0; i < SIZE; i++)
+            {
+                matrix[i] = new int[SIZE];
+            }
 
             Assert.Throws<ArgumentNullException>(
-                () => MatrixSort.DescendingSortBy(null, new CompareByRowSum()), 
-                $"{nameof(MatrixSort.DescendingSortBy)} not throwing ArgumentNullException.");
+                () => matrix.SortBy(null),
+                $"{nameof(MatrixSort.SortBy)} not throwing ArgumentNullException.");
         }
+
 
         [Test]
         public void SortByRowSumAscending_Random100ValidTests()
@@ -33,7 +45,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                array.AscendingSortBy(new CompareByRowSum());
+                array.SortBy(new CompareByRowSumAscending());
 
                 if (!IsSortedByKeyAscending(array, key: Enumerable.Sum))
                 {
@@ -51,7 +63,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                array.DescendingSortBy(new CompareByRowSum());
+                array.SortBy(new CompareByRowSumDescending());
 
                 if (!IsSortedByKeyDescending(array, key: Enumerable.Sum))
                 {
@@ -69,7 +81,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                array.AscendingSortBy(new CompareByMaxElement());
+                array.SortBy(new CompareByMaxElementAscending());
 
                 if (!IsSortedByKeyAscending(array, key: Enumerable.Max))
                 {
@@ -87,7 +99,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                array.DescendingSortBy(new CompareByMaxElement());
+                array.SortBy(new CompareByMaxElementDescending());
 
                 if (!IsSortedByKeyDescending(array, key: Enumerable.Max))
                 {
@@ -105,7 +117,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                array.AscendingSortBy(new CompareByMinElement());
+                array.SortBy(new CompareByMinElementAscending());
 
                 if (!IsSortedByKeyAscending(array, key: Enumerable.Min))
                 {
@@ -123,7 +135,7 @@
             {
                 int[][] array = this.GetRandomArray(SIZE, rng);
 
-                array.DescendingSortBy(new CompareByMinElement());
+                array.SortBy(new CompareByMinElementDescending());
 
                 if (!IsSortedByKeyDescending(array, Enumerable.Min))
                 {
