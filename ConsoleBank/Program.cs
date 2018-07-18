@@ -29,6 +29,9 @@
                 Console.WriteLine();
             }
 
+            var kyril = HolderService.GetAllHolders().Where(h => h.Name == "Kyril Siaukovich");
+
+
             var accounts = FakeRepository.Instance.GetAllBankAccounts();
             var zipped = accounts.Zip(Enumerable.Range(0, accounts.Count()), (acc, num) => new { Number = num, Account = acc });
 
