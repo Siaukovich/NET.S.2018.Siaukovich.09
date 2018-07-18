@@ -8,7 +8,7 @@
     /// <summary>
     /// Singleton class for generating unique account numbers.
     /// </summary>
-    public class GuidAccountNumberService : IAccountNumberGenerator
+    public class GuidAccountNumberService : IAccountNumberService
     {
         /// <summary>
         /// All existing accounts.
@@ -22,9 +22,16 @@
             new Lazy<GuidAccountNumberService>(() => new GuidAccountNumberService(), LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
+        /// Prevents a default instance of the <see cref="GuidAccountNumberService"/> class from being created.
+        /// </summary>
+        private GuidAccountNumberService()
+        {
+        }
+        
+        /// <summary>
         /// Gets the class instance.
         /// </summary>
-        public IAccountNumberGenerator Instance => LazyInstance.Value;
+        public static IAccountNumberService Instance => LazyInstance.Value;
 
         /// <summary>
         /// Generates new account number.
@@ -41,7 +48,7 @@
             // with length 32 we have 36^32 (6.3e^49) possible account numbers, 
             // so chances to get already existing account number at least once are extremly low.
             // Because of that, we won't stay inside the while loop for a long time (most likely we even won't get inside it).
-            while (!Accounts.Contains(newAccountNumber))
+            while (Accounts.Contains(newAccountNumber))
             {
                 newAccountNumber = Guid.NewGuid().ToString("N").ToUpperInvariant();
             }
@@ -50,17 +57,5 @@
 
             return newAccountNumber;
         }
-
-        /// <summary>
-        /// Checks if given account number exists.
-        /// </summary>
-        /// <param name="accountNumber">
-        /// The account number.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// True if exists, false otherwise.
-        /// </returns>
-        public bool Exists(string accountNumber) => Accounts.Contains(accountNumber);
     }
 }

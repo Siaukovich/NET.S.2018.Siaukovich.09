@@ -1,7 +1,10 @@
 ﻿namespace HolderService
 {
     using System;
+    using System.Collections.Generic;
     using System.Text.RegularExpressions;
+
+    using BankAccount;
 
     /// <summary>
     /// Class that describes a single holder by his name, contact phone, email and home address.
@@ -11,15 +14,9 @@
         #region Private fields
 
         /// <summary>
-        /// Holder's id. 
-        /// Must be unique for every holder, because only id is used for comparison.
+        /// Set of current holder's bank accounts.
         /// </summary>
-        private readonly long id;
-
-        /// <summary>
-        /// Holder's name.
-        /// </summary>
-        private string name;
+        private readonly HashSet<AbstractBankAccount> bankAccounts;
 
         /// <summary>
         /// Holder's contact phone.
@@ -55,9 +52,6 @@
         /// <param name="email">
         /// Holder's email.
         /// </param>
-        /// <param name="id">
-        /// Holder's id.
-        /// </param>
         /// <exception cref="ArgumentNullException">
         /// Thrown if any of the passed string is null.
         /// </exception>
@@ -65,14 +59,32 @@
         /// Thrown if passed string doesn't match property requirements. 
         /// For additional info see properties' description.
         /// </exception>
-        public Holder(string name, string contactPhone, string homeAddress, string email, long id)
+        public Holder(string name, string contactPhone, string homeAddress, string email)
         {
+            ThrowForInvalidName();
+
             this.Name = name;
             this.ContactPhone = contactPhone;
             this.HomeAddress = homeAddress;
             this.Email = email;
 
-            this.id = id;
+            this.bankAccounts = new HashSet<AbstractBankAccount>();
+
+            void ThrowForInvalidName()
+            {
+                if (string.IsNullOrEmpty(name))
+                {
+                    throw new ArgumentNullException(nameof(name));
+                }
+
+                const string PATTERN = @"^([A-Z][a-z]* )+[A-Z][a-z]*$";
+                var regex = new Regex(PATTERN);
+                if (!regex.IsMatch(name))
+                {
+                    throw new ArgumentException("Name must be in English, contain at least two words separated by " +
+                                                "single whitespace and only first letter of each name must be uppercase.");
+                }
+            }
         }
 
         #endregion
@@ -80,40 +92,14 @@
         #region Propereties
 
         /// <summary>
-        /// Gets or sets current holder's name.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">
-        /// Thrown if passed name is null.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// Thrown if passed name doesn't satisfy given rules:
+        /// Gets current holder's name.
+        /// Must satisfy given rules:
         /// 1. Name can be only in English.
         /// 2. Name must contain at least two words. 
         /// 3. All words separated by one whitespace.
         /// 4. Only first letter of each word must be uppercase.
-        /// </exception>
-        public string Name
-        {
-            get => this.name;
-
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                const string PATTERN = @"^([A-Z][a-z]* )+[A-Z][a-z]*$";
-                var regex = new Regex(PATTERN);
-                if (!regex.IsMatch(value))
-                {
-                    throw new ArgumentException("Name must be in English, contain at least two words separated by " + 
-                                                "single whitespace and only first letter of each name must be uppercase.");
-                }
-
-                this.name = value;
-            }
-        }
+        /// </summary>
+        public string Name { get; }
 
         /// <summary>
         /// Gets or sets current holder's contact phone.
@@ -141,7 +127,7 @@
         }
 
         /// <summary>
-        /// Gets or sets current customer's home address.
+        /// Gets or sets current holder's home address.
         /// </summary>
         /// <exception cref="ArgumentNullException">
         /// Thrown if passed home address is null.
@@ -166,7 +152,7 @@
         }
 
         /// <summary>
-        /// Gets or sets current customer's email.
+        /// Gets or sets current holder's email.
         /// </summary>
         public string Email
         {
@@ -182,6 +168,29 @@
                 this.email = value;
             }
         }
+
+        #endregion
+
+        #region Public methods
+
+        /// <summary>
+        /// Adds a bank account to current holder.
+        /// </summary>
+        /// <param name="newBankAccount">
+        /// New bank account.
+        /// </param>
+        public void AddBankAccount(AbstractBankAccount newBankAccount)
+        {
+            this.bankAccounts.Add(newBankAccount);
+        }
+
+        /// <summary>
+        /// Returns all accounts as IEnumerable&lt;AbstractBankAccount&gt;.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="IEnumerable&lt;AbstractBankAccount&gt;"/>.
+        /// </returns>
+        public IEnumerable<AbstractBankAccount> GetAllAccounts() => this.bankAccounts;
 
         #endregion
 
@@ -209,7 +218,10 @@
                 return true;
             }
 
-            return this.id == other.id;
+            return this.Name == other.Name &&
+                   this.ContactPhone == other.ContactPhone &&
+                   this.HomeAddress == other.HomeAddress &&
+                   this.Email == other.Email;
         }
 
         /// <summary>
@@ -246,12 +258,12 @@
         }
 
         /// <summary>
-        /// Returns this Holder's hash code.
+        /// Returns this holders hash code.
         /// </summary>
         /// <returns>
         /// The <see cref="int"/>.
         /// </returns>
-        public override int GetHashCode() => this.id.GetHashCode();
+        public override int GetHashCode() => 397 ^ this.Name.GetHashCode();
 
         #endregion
 
