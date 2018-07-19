@@ -1,6 +1,6 @@
 # NET.S.2018.Siaukovich.09
 
-* Сделана задача [сортировок строк зубчатого массива](https://github.com/Siaukovich/NET.S.2018.Siaukovich.09/blob/master/Matrix/MatrixSort.cs).
+* Сделана задача сортировок строк зубчатого массива на основе [делегата](https://github.com/Siaukovich/NET.S.2018.Siaukovich.09/blob/master/Matrix/MatrixSortByDelegate.cs) и [компаратора](https://github.com/Siaukovich/NET.S.2018.Siaukovich.09/blob/master/Matrix/MatrixSortByComparer.cs).
     * Для задачи написаны [тесты](https://github.com/Siaukovich/NET.S.2018.Siaukovich.09/blob/master/Matrix.Tests/MatrixSortTests.cs).
 * Структура задачи с банковским аккаунтом выглядит следующим образом:
     * В папке [AccountService](https://github.com/Siaukovich/NET.S.2018.Siaukovich.09/tree/master/AccountServicet) находится абстрактный класс [AbstractAccountService](https://github.com/Siaukovich/NET.S.2018.Siaukovich.09/blob/master/AccountService/AbstractAccountService.cs),   конкретный класс [AccountService](https://github.com/Siaukovich/NET.S.2018.Siaukovich.09/blob/master/AccountService/AccountService.cs) и статический [ServiceProvider](https://github.com/Siaukovich/NET.S.2018.Siaukovich.09/blob/master/AccountService/ServiceProvider.cs), цель которого - выдать пользователю объект-сервис.
