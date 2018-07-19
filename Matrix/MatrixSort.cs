@@ -1,6 +1,7 @@
 ﻿namespace Matrix
 {
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Class for sorting matrix's rows by different keys.
@@ -19,7 +20,7 @@
         /// <exception cref="ArgumentNullException">
         /// Thrown if matrix is null.
         /// </exception>
-        public static void SortBy(this int[][] matrix, ICustomComparer comparer)
+        public static void SortBy(this int[][] matrix, IComparer<int[]> comparer)
         {
             if (matrix == null)
             {
@@ -43,7 +44,7 @@
         /// <param name="comparer">
         /// Comparer of two sz matrixes.
         /// </param>
-        private static void BubbleSort(int[][] matrix, ICustomComparer comparer)
+        private static void BubbleSort(int[][] matrix, IComparer<int[]> comparer)
         {
             for (int i = 0; i < matrix.Length; i++)
             {

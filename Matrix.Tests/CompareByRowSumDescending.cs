@@ -1,6 +1,8 @@
 ﻿namespace Matrix.Tests
 {
-    class CompareByRowSumDescending : ICustomComparer
+    using System.Collections.Generic;
+
+    class CompareByRowSumDescending : IComparer<int[]>
     {
         public int Compare(int[] lhs, int[] rhs)
         {

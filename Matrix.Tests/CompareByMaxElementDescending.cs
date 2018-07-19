@@ -1,6 +1,8 @@
 ﻿namespace Matrix.Tests
 {
-    class CompareByMaxElementDescending : ICustomComparer
+    using System.Collections.Generic;
+
+    class CompareByMaxElementDescending : IComparer<int[]>
     {
         public int Compare(int[] lhs, int[] rhs)
         {
@@ -9,12 +11,12 @@
                 return 0;
             }
 
-            if (lhs == null && rhs != null)
+            if (lhs == null)
             {
                 return 1;
             }
 
-            if (lhs != null && rhs == null)
+            if (rhs == null)
             {
                 return -1;
             }
