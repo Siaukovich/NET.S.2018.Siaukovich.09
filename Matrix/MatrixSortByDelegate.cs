@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
 
-    public static class MatrixSortDelegate
+    public static class MatrixSortByDelegate
     {
         /// <summary>
         /// Sorts in ascending order using given strategy.
