@@ -3,6 +3,9 @@
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Class for sorting matrix's rows by different Comparison delegates.
+    /// </summary>
     public static class MatrixSortByDelegate
     {
         /// <summary>

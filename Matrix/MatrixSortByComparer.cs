@@ -4,7 +4,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// Class for sorting matrix's rows by different keys.
+    /// Class for sorting matrix's rows by different IComparers.
     /// </summary>
     public static class MatrixSortByComparer
     {
