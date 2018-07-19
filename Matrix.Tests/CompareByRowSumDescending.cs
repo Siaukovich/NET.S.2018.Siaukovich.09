@@ -11,12 +11,12 @@
                 return 0;
             }
 
-            if (lhs == null && rhs != null)
+            if (lhs == null)
             {
                 return 1;
             }
 
-            if (lhs != null && rhs == null)
+            if (rhs == null)
             {
                 return -1;
             }
